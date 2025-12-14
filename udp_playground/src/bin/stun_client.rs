@@ -4,7 +4,7 @@ use tokio::net::UdpSocket;
 async fn main() -> anyhow::Result<()> {
   let sock = UdpSocket::bind("0.0.0.0:0").await?;
 
-  sock.send_to(b"Hello There", "").await?;
+  sock.send_to(b"Hello There", "72.56.90.50:9876").await?;
 
   let mut buf = [0u8; 1024];
   let (len, _) = sock.recv_from(&mut buf).await?;
