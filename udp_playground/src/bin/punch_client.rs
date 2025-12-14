@@ -9,7 +9,7 @@ async fn main() -> anyhow::Result<()> {
   .expect("peer addr required")
   .parse()?;
 
-  let socket = Arc::new(UdpSocket::bind("0.0.0.0:0").await?);
+  let socket = Arc::new(UdpSocket::bind("0.0.0.0:8080").await?);
 
   //socket.send_to(b"Hello There", "72.56.90.50:9876").await?;
   //let mut buf = [0u8; 1024];
