@@ -11,7 +11,7 @@ async fn main() -> anyhow::Result<()> {
     .expect("peer addr required")
     .parse()?;
 
-  let socket = Arc::new(UdpSocket::bind("0.0.0.0:0").await?);
+  let socket = Arc::new(UdpSocket::bind("0.0.0.0:8080").await?);
   socket.connect(peer_addr).await?;
 
   println!("Punching to {}", peer_addr);
