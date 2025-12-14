@@ -11,11 +11,11 @@ async fn main() -> anyhow::Result<()> {
 
   let socket = Arc::new(UdpSocket::bind("0.0.0.0:0").await?);
 
-  socket.send_to(b"Hello There", "72.56.90.50:9876").await?;
-  let mut buf = [0u8; 1024];
-  let (len, _) = socket.recv_from(&mut buf).await?;
-  let public_addr = std::str::from_utf8(&buf[..len]).unwrap();
-  println!("{}", public_addr);
+  //socket.send_to(b"Hello There", "72.56.90.50:9876").await?;
+  //let mut buf = [0u8; 1024];
+  //let (len, _) = socket.recv_from(&mut buf).await?;
+  //let public_addr = std::str::from_utf8(&buf[..len]).unwrap();
+  //println!("{}", public_addr);
 
 
   println!("Local addr: {}", socket.local_addr()?);
