@@ -21,8 +21,8 @@ async fn main() -> anyhow::Result<()> {
   println!("Local addr: {}", socket.local_addr()?);
   println!("Peer  addr: {}", peer);
 
-  let received = Arc::new(tokio::sync::Notify::new());
-  let received_clone = received.clone();
+  //let received = Arc::new(tokio::sync::Notify::new());
+  //let received_clone = received.clone();
 
   // Sender
   let sender = {
