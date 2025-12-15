@@ -19,9 +19,9 @@ async fn main() -> anyhow::Result<()> {
   let is_initiator = std::env::var("INITIATOR").is_ok();
 
   let noise = if is_initiator {
-    builder.local_private_key(&static_key.private).build_initiator()?
+    builder.local_private_key(&static_key.private)?.build_initiator()?
   } else {
-    builder.local_private_key(&static_key.private).build_responder()?
+    builder.local_private_key(&static_key.private)?.build_responder()?
   };
 
   let noise = Arc::new(Mutex::new(noise));
