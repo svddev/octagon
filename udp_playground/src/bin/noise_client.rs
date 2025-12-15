@@ -1,10 +1,13 @@
 use std::net::SocketAddr;
 use std::sync::Arc;
+use std::time::Duration;
 use snow::Builder;
 use tokio::net::UdpSocket;
+use tokio::sync::Mutex;
+use tokio::time::sleep;
 
 
-
+#[allow(unused_mut)]
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
   let peer: SocketAddr = std::env::args()
@@ -35,22 +38,42 @@ async fn main() -> anyhow::Result<()> {
   };
 
 
-  let mut buf = [0u8; 1024];
-  let mut msg = [0u8; 1024];
+  let noise = Arc::new(Mutex::new(noise));
+
+  let sender = {
+    let socket = socket.clone();
+    let noise = noise.clone();
+    tokio::spawn(async move {
+      let mut buf = [0u8; 2048];
+      loop {
+        let mut n = noise.lock().await;
+        if n.is_handshake_finished() {
+          break;
+        }
+
+        if let Ok(len) = n.write_message(&[], &mut buf) {
+          let _ = socket.send_to(&buf[..len], peer).await;
+        }
+        drop(n);
+
+        sleep(Duration::from_millis(100)).await;
+      }
+    })
+  };
+
+  let mut buf = [0u8; 2048];
+
   loop {
-    if noise.is_handshake_finished() {
-      println!("🔐 Noise handshake complete");
+    let (len, _) = socket.recv_from(&mut buf).await?;
+    let mut n = noise.lock().await;
+    let _ = n.read_message(&buf[..len], &mut []);
+
+    if n.is_handshake_finished() {
       break;
     }
-
-    if noise.is_my_turn() {
-      let len = noise.write_message(&[], &mut msg)?;
-      socket.send_to(&msg[..len], peer).await?;
-    }
-
-    let (len, _) = socket.recv_from(&mut buf).await?;
-    noise.read_message(&buf[..len], &mut [])?;
   }
+
+  sender.abort();
 
   println!("Session keys established");
 
