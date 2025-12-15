@@ -34,12 +34,14 @@ async fn main() -> anyhow::Result<()> {
     let last_packet = last_packet.clone();
 
     tokio::spawn(async move {
+      let mut finished_at: Option<std::time::Instant> = None;
+
       loop {
         let packet = {
           let mut n = noise.lock().await;
 
           if n.is_handshake_finished() {
-            return;
+            finished_at.get_or_insert(std::time::Instant::now());
           }
 
           if !n.is_my_turn() {
@@ -61,6 +63,12 @@ async fn main() -> anyhow::Result<()> {
           let _ = socket.send_to(&pkt, peer).await;
         } else if let Some(pkt) = last_packet.lock().await.clone() {
           let _ = socket.send_to(&pkt, peer).await;
+        }
+
+        if let Some(t) = finished_at {
+          if t.elapsed() > Duration::from_secs(1) {
+            break;
+          }
         }
 
         sleep(Duration::from_millis(100)).await;
