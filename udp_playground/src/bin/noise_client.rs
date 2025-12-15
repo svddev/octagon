@@ -11,7 +11,7 @@ async fn main() -> anyhow::Result<()> {
   .expect("peer addr required")
   .parse()?;
 
-  let socket = Arc::new(UdpSocket::bind("0.0.0.0:0").await?);
+  let socket = Arc::new(UdpSocket::bind("0.0.0.0:8080").await?);
 
   let builder = Builder::new("Noise_XX_25519_ChaChaPoly_BLAKE2s".parse()?);
   let static_key = builder.generate_keypair()?;
