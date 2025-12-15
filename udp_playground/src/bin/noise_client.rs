@@ -65,6 +65,7 @@ async fn main() -> anyhow::Result<()> {
           let _ = socket.send_to(&pkt, peer).await;
         }
 
+        // 👇 linger for 1 second after finishing
         if let Some(t) = finished_at {
           if t.elapsed() > Duration::from_secs(1) {
             break;
